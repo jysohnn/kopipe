@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.20"
+    `java-library`
     `maven-publish`
 }
 
@@ -25,6 +26,10 @@ tasks.test {
 
 kotlin {
     jvmToolchain(21)
+}
+
+java {
+    withSourcesJar()
 }
 
 publishing {
