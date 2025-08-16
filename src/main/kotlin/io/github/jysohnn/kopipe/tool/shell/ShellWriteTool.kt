@@ -17,9 +17,12 @@ class ShellWriteTool : Tool(
                 Input::class.java
             )
 
-            val process = ProcessBuilder("zsh", "-c", "echo ${inputObject.fileContent} > ${inputObject.fileName}")
-                .redirectErrorStream(true)
-                .start()
+            val process = ProcessBuilder("zsh", "-c",
+                """|cat <<'EOF' > ${inputObject.fileName}
+                   |${inputObject.fileContent}
+                   |EOF
+                """.trimMargin()
+            ).redirectErrorStream(true).start()
 
             process.waitFor()
 
