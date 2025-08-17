@@ -10,7 +10,7 @@ abstract class EmbeddingVectorStore : KnowledgeStore {
 
     private val embeddingVectors: MutableList<EmbeddingVector> = mutableListOf()
 
-    override fun addAll(knowledge: List<String>) {
+    override fun store(knowledge: List<String>) {
         val embeddingVectors = toEmbeddingVectors(texts = knowledge)?.mapIndexed { index, vector ->
             EmbeddingVector(
                 vector = vector,
