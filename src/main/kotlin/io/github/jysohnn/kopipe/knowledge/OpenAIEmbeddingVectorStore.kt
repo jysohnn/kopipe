@@ -1,11 +1,7 @@
 package io.github.jysohnn.kopipe.knowledge
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.github.jysohnn.kopipe.objectmapper.defaultObjectMapper
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -15,8 +11,7 @@ import kotlin.math.sqrt
 class OpenAIEmbeddingVectorStore(
     val model: String = "text-embedding-ada-002",
     private val apiKey: String = System.getenv("OPENAI_API_KEY")
-        ?: throw IllegalArgumentException("API KEY not exist."),
-    private val isPossibleToRepeatRetrieving: Boolean = true
+        ?: throw IllegalArgumentException("API KEY not exist.")
 ) : KnowledgeStore {
     class EmbeddingVector(
         val vector: List<Double>,
@@ -27,17 +22,8 @@ class OpenAIEmbeddingVectorStore(
         .readTimeout(1, TimeUnit.MINUTES)
         .build()
 
-    private val objectMapper: ObjectMapper = ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
-        .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .registerModule(JavaTimeModule())
-        .registerKotlinModule()
-        .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-
+    private val objectMapper: ObjectMapper = defaultObjectMapper
     private val embeddingVectors: MutableList<EmbeddingVector> = mutableListOf()
-    private val retrievingHistory: MutableSet<String> = mutableSetOf()
 
     override fun addAll(knowledge: List<String>) {
         val embeddingVectors = toEmbeddingVectors(texts = knowledge)?.mapIndexed { index, vector ->
@@ -56,10 +42,8 @@ class OpenAIEmbeddingVectorStore(
             calculateCosineSimilarity(queryVector, it.vector)
         }
 
-        if (!isPossibleToRepeatRetrieving && retrievingHistory.contains(mostSimilarVector.text)) return null
         if (calculateCosineSimilarity(queryVector, mostSimilarVector.vector) < minSimilarity) return null
 
-        retrievingHistory.add(mostSimilarVector.text)
         return mostSimilarVector.text
     }
 

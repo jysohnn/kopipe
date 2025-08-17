@@ -1,13 +1,9 @@
 package io.github.jysohnn.kopipe.tool
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.github.jysohnn.kopipe.context.Context
 import io.github.jysohnn.kopipe.context.Role
+import io.github.jysohnn.kopipe.objectmapper.defaultObjectMapper
 import io.github.jysohnn.kopipe.pipe.languagemodel.LanguageModel
 
 class ToolSelector(
@@ -25,39 +21,63 @@ class ToolSelector(
         val input: Any
     )
 
-    private val objectMapper: ObjectMapper = ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
-        .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .registerModule(JavaTimeModule())
-        .registerKotlinModule()
-        .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+    private val objectMapper: ObjectMapper = defaultObjectMapper
 
-    fun select(context: Context, input: String): Output {
+    fun select(
+        input: String,
+        context: Context,
+        toolContext: Context? = null,
+        knowledgeContext: Context? = null
+    ): Output {
         val inputWithContext = """
             |# System Instruction
-            |- You are a **Tool Usage Planner**. Analyze the given [Conversation History] and [User's Latest Request],
-            |- decide whether to use a tool from the [Tool List],
-            |- if using, plan which tool to call and with what arguments(input),
-            |- and output the result **only** in the JSON schema below. If you will not use any tool, return "null" only.
-            |   {"name": "**Tool Name**", input: {// JSON Object in the same format as the input example }}
+            |- You are a **Tool Usage Planner**.
+            |- Your task is to decide whether to use a tool from the [Tool List] in order to handle the user's latest request.
+            |- To make this decision, carefully analyze the following inputs: [Conversation History], [Knowledge History], [Tool History], [User's Latest Request]
+            |
+            |- If you decide to use a tool:
+            |- Select the most appropriate tool from the [Tool List].
+            |- Plan the exact input parameters for that tool.
+            |- Output your decision strictly in the JSON schema provided.
+            |- If you decide **not** to use any tool, output exactly "null"
+            |- Below is an output example:
+            |${
+            objectMapper.writeValueAsString(
+                LanguageModelOutput(
+                    name = "tool_name",
+                    input = mapOf("key1" to "value1", "key2" to "value2")
+                )
+            )
+        }
             |
             |- Always respond in the same language that the user uses.
-            |- The roles in the [Conversation History] represent the following:
-            |${Role.entries.joinToString("\n") { "\t- ${it.name}: ${it.description}" }}
+            |- The roles in the history represent the following:
+            |${Role.entries.joinToString("\n") { it.getSpecification() }}
             |
             |- The available [Tool List] is as follows. Refer to the **Input Example** and write the JSON.
             |- Do not translate the JSON arbitrarily—write it in English exactly as in the input example.
             |- Never output free text, additional explanations, or Markdown. Any characters other than JSON are prohibited.
             |
             |# Tool List
-            |${tools.joinToString("\n\n") { it.getSpecification() }}
+            |${tools.joinToString("\n") { it.getSpecification() }}
+            |
+            |# Knowledge History
+            |- This section contains additional knowledge or reference information retrieved based on the user's requests.  
+            |- It may include factual data, background explanations, or domain-specific knowledge that can assist in answering the request.  
+            |${if (knowledgeContext?.isNotEmpty() == true) knowledgeContext.distinct() else "None."}
             |
             |# Conversation History
+            |- This section records the dialogue between the USER and the ASSISTANT up to this point.  
+            |- It provides the conversational context, including the user’s previous questions and the assistant’s answers.  
             |$context
             |
+            |# Tool History
+            |- This section lists the tools that have been invoked to fulfill the user's request, along with their execution results.  
+            |- It shows what external actions were taken (e.g., database query, API call, or command execution) and their outcomes.  
+            |${if (toolContext?.isNotEmpty() == true) toolContext else "None."}
+            |
             |# User's Latest Request
+            |- This is the **most recent user request** that you must answer, using all of the context provided above.
             |$input
         """.trimMargin()
 

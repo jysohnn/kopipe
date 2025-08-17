@@ -1,6 +1,7 @@
 # Kopipe
 
-A Kotlin-based pipeline library for developing LLM agents. Features intuitive input/output connections through the `-` operator overloading of the `Pipe` class.
+A Kotlin-based pipeline library for developing LLM agents. Features intuitive input/output connections through the `-`
+operator overloading of the `Pipe` class.
 
 ## Key Features
 
@@ -92,7 +93,7 @@ The abstract base class for all components:
 abstract class Pipe<I, O> {
     // Pipe connection through - operator overloading
     operator fun <T> minus(pipe: Pipe<O, T>): Pipe<I, T>
-    
+
     // Actual processing logic
     abstract fun execute(input: I): O
 }
@@ -107,7 +108,7 @@ class ContextAwareLanguageModel(
     val languageModel: LanguageModel
 ) : LanguageModel() {
     val context: Context = Context()
-    
+
     override fun execute(input: String): String
 }
 ```
@@ -140,34 +141,34 @@ class ToolSelector(
 ### Available Tools
 
 - **ShellReadTool**
-  - Reads the contents of a specified file and returns it as a string
-  - Input: `{"fileName": "file.txt"}`
-  - Executes: `cat <filename>`
+    - Reads the contents of a specified file and returns it as a string
+    - Input: `{"fileName": "file.txt"}`
+    - Executes: `cat <filename>`
 
 - **ShellWriteTool**
-  - Writes the specified content to a file, overwriting existing content
-  - Input: `{"fileName": "file.txt", "fileContent": "Hello World"}`
-  - Executes: `echo <content> > <filename>`
+    - Writes the specified content to a file, overwriting existing content
+    - Input: `{"fileName": "file.txt", "fileContent": "Hello World"}`
+    - Executes: `echo <content> > <filename>`
 
 - **ShellCopyTool**
-  - Creates a copy of a file with a new name
-  - Input: `{"fileName": "file.txt", "copyFileName": "file_copy.txt"}`
-  - Executes: `cp <source> <destination>`
+    - Creates a copy of a file with a new name
+    - Input: `{"fileName": "file.txt", "copyFileName": "file_copy.txt"}`
+    - Executes: `cp <source> <destination>`
 
 - **ShellMoveTool**
-  - Renames or moves a file to a new location/name
-  - Input: `{"fileName": "file.txt", "newFileName": "new_file.txt"}`
-  - Executes: `mv <oldname> <newname>`
+    - Renames or moves a file to a new location/name
+    - Input: `{"fileName": "file.txt", "newFileName": "new_file.txt"}`
+    - Executes: `mv <oldname> <newname>`
 
 - **ShellListTool**
-  - Lists all files and directories in the current directory
-  - Input: `{}`
-  - Executes: `ls`
+    - Lists all files and directories in the current directory
+    - Input: `{}`
+    - Executes: `ls`
 
 - **ShellTouchTool**
-  - Creates a new empty file with the specified name
-  - Input: `{"fileName": "new_file.txt"}`
-  - Executes: `touch <filename>`
+    - Creates a new empty file with the specified name
+    - Input: `{"fileName": "new_file.txt"}`
+    - Executes: `touch <filename>`
 
 ## Requirements
 

@@ -17,7 +17,8 @@ class ShellWriteTool : Tool(
                 Input::class.java
             )
 
-            val process = ProcessBuilder("zsh", "-c",
+            val process = ProcessBuilder(
+                "zsh", "-c",
                 """|cat <<'EOF' > ${inputObject.fileName}
                    |${inputObject.fileContent}
                    |EOF
