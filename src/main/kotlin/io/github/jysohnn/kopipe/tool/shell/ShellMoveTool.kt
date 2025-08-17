@@ -1,5 +1,6 @@
 package io.github.jysohnn.kopipe.tool.shell
 
+import io.github.jysohnn.kopipe.objectmapper.objectMapper
 import io.github.jysohnn.kopipe.tool.Tool
 
 class ShellMoveTool : Tool(

@@ -1,9 +1,8 @@
 package io.github.jysohnn.kopipe.tool
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.jysohnn.kopipe.context.Context
 import io.github.jysohnn.kopipe.context.Role
-import io.github.jysohnn.kopipe.objectmapper.defaultObjectMapper
+import io.github.jysohnn.kopipe.objectmapper.objectMapper
 import io.github.jysohnn.kopipe.pipe.languagemodel.LanguageModel
 
 class ToolSelector(
@@ -20,8 +19,6 @@ class ToolSelector(
         val name: String,
         val input: Any
     )
-
-    private val objectMapper: ObjectMapper = defaultObjectMapper
 
     fun select(
         input: String,

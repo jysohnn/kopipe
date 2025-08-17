@@ -1,7 +1,6 @@
 package io.github.jysohnn.kopipe.tool
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.jysohnn.kopipe.objectmapper.defaultObjectMapper
+import io.github.jysohnn.kopipe.objectmapper.objectMapper
 
 abstract class Tool(
     val name: String,
@@ -10,8 +9,6 @@ abstract class Tool(
     val outputExample: String,
     val isUserConsentRequired: Boolean = true
 ) {
-
-    protected val objectMapper: ObjectMapper = defaultObjectMapper
 
     abstract fun invoke(input: String): String
 

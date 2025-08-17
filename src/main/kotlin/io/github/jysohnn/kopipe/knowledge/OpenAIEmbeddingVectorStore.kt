@@ -1,7 +1,6 @@
 package io.github.jysohnn.kopipe.knowledge
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.jysohnn.kopipe.objectmapper.defaultObjectMapper
+import io.github.jysohnn.kopipe.objectmapper.objectMapper
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -16,8 +15,6 @@ class OpenAIEmbeddingVectorStore(
     private val httpClient = OkHttpClient.Builder()
         .readTimeout(1, TimeUnit.MINUTES)
         .build()
-
-    private val objectMapper: ObjectMapper = defaultObjectMapper
 
     override fun toEmbeddingVectors(texts: List<String>): List<List<Double>>? {
         if (texts.isEmpty()) return emptyList()
