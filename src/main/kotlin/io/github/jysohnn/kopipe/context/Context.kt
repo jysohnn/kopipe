@@ -12,12 +12,8 @@ class Context(
         return messages.isNotEmpty()
     }
 
-    fun distinct(): Context {
-        val messagesCopy = this.messages.map { it.copy() }
-            .distinct()
-            .toMutableList()
-
-        return Context(messages = messagesCopy)
+    fun contains(message: Message): Boolean {
+        return messages.toSet().contains(message)
     }
 
     override fun toString(): String {

@@ -64,7 +64,7 @@ class ToolSelector(
             |# Knowledge History
             |- This section contains additional knowledge or reference information retrieved based on the user's requests.  
             |- It may include factual data, background explanations, or domain-specific knowledge that can assist in answering the request.  
-            |${if (knowledgeContext?.isNotEmpty() == true) knowledgeContext.distinct() else "None."}
+            |${if (knowledgeContext?.isNotEmpty() == true) knowledgeContext else "None."}
             |
             |# Conversation History
             |- This section records the dialogue between the USER and the ASSISTANT up to this point.  
