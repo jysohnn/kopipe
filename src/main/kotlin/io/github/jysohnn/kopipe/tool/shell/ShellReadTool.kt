@@ -6,7 +6,8 @@ class ShellReadTool : Tool(
     name = "shell_read",
     description = "Read the contents of the file with the given **fileName**.",
     inputExample = Input(fileName = "file.txt"),
-    outputExample = "The contents of file.txt are as follows:\nThis is the file contents."
+    outputExample = "The contents of file.txt are as follows:\nThis is the file contents.",
+    isUserConsentRequired = false
 ) {
     class Input(val fileName: String)
 

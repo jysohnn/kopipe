@@ -7,7 +7,8 @@ abstract class Tool(
     val name: String,
     val description: String,
     val inputExample: Any,
-    val outputExample: String
+    val outputExample: String,
+    val isUserConsentRequired: Boolean = true
 ) {
 
     protected val objectMapper: ObjectMapper = defaultObjectMapper

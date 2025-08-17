@@ -6,7 +6,8 @@ class ShellListTool : Tool(
     name = "shell_list",
     description = "List the files in the current directory.",
     inputExample = Input(),
-    outputExample = "The files in the current directory are as follows:\nfile_1.txt file_2.txt file_3.txt."
+    outputExample = "The files in the current directory are as follows:\nfile_1.txt file_2.txt file_3.txt.",
+    isUserConsentRequired = false
 ) {
     class Input
 
