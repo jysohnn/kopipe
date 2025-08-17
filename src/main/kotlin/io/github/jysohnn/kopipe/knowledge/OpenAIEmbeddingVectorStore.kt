@@ -23,26 +23,32 @@ class OpenAIEmbeddingVectorStore(
         if (texts.isEmpty()) return emptyList()
 
         try {
-            val requestObject = OpenAIEmbeddingRequest(
-                model = model,
-                encodingFormat = "float",
-                input = texts
-            )
-            val requestBody = objectMapper.writeValueAsString(requestObject).toRequestBody()
+            val vectors: MutableList<List<Double>> = mutableListOf()
 
-            val request = Request.Builder()
-                .url("https://api.openai.com/v1/embeddings")
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer $apiKey")
-                .post(requestBody).build()
+            texts.chunked(100).forEach { chunk ->
+                val requestObject = OpenAIEmbeddingRequest(
+                    model = model,
+                    encodingFormat = "float",
+                    input = chunk
+                )
+                val requestBody = objectMapper.writeValueAsString(requestObject).toRequestBody()
 
-            val response = httpClient.newCall(request).execute()
-            val responseObject = objectMapper.readValue(
-                response.body.string(),
-                OpenAIEmbeddingResponse::class.java
-            )
+                val request = Request.Builder()
+                    .url("https://api.openai.com/v1/embeddings")
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Authorization", "Bearer $apiKey")
+                    .post(requestBody).build()
 
-            return responseObject.data.map { it.embedding }
+                val response = httpClient.newCall(request).execute()
+                val responseObject = objectMapper.readValue(
+                    response.body.string(),
+                    OpenAIEmbeddingResponse::class.java
+                )
+
+                vectors.addAll(responseObject.data.map { it.embedding })
+            }
+
+            return vectors
         } catch (_: Throwable) {
             return null
         }

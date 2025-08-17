@@ -23,35 +23,41 @@ class GeminiEmbeddingVectorStore(
         if (texts.isEmpty()) return emptyList()
 
         try {
-            val requestObject = GeminiEmbeddingRequest(
-                requests = texts.map {
-                    GeminiEmbeddingRequest.Request(
-                        model = "models/$model",
-                        content = GeminiEmbeddingRequest.Request.Content(
-                            parts = listOf(
-                                GeminiEmbeddingRequest.Request.Content.Part(
-                                    text = it
+            val vectors: MutableList<List<Double>> = mutableListOf()
+
+            texts.chunked(100).forEach { chunk ->
+                val requestObject = GeminiEmbeddingRequest(
+                    requests = chunk.map {
+                        GeminiEmbeddingRequest.Request(
+                            model = "models/$model",
+                            content = GeminiEmbeddingRequest.Request.Content(
+                                parts = listOf(
+                                    GeminiEmbeddingRequest.Request.Content.Part(
+                                        text = it
+                                    )
                                 )
                             )
                         )
-                    )
-                }
-            )
-            val requestBody = objectMapper.writeValueAsString(requestObject).toRequestBody()
+                    }
+                )
+                val requestBody = objectMapper.writeValueAsString(requestObject).toRequestBody()
 
-            val request = Request.Builder()
-                .url("https://generativelanguage.googleapis.com/v1beta/models/$model:batchEmbedContents")
-                .addHeader("Content-Type", "application/json")
-                .addHeader("x-goog-api-key", apiKey)
-                .post(requestBody).build()
+                val request = Request.Builder()
+                    .url("https://generativelanguage.googleapis.com/v1beta/models/$model:batchEmbedContents")
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("x-goog-api-key", apiKey)
+                    .post(requestBody).build()
 
-            val response = httpClient.newCall(request).execute()
-            val responseObject = objectMapper.readValue(
-                response.body.string(),
-                GeminiEmbeddingResponse::class.java
-            )
+                val response = httpClient.newCall(request).execute()
+                val responseObject = objectMapper.readValue(
+                    response.body.string(),
+                    GeminiEmbeddingResponse::class.java
+                )
 
-            return responseObject.embeddings.map { it.values }
+                vectors.addAll(responseObject.embeddings.map { it.values })
+            }
+
+            return vectors
         } catch (_: Throwable) {
             return null
         }

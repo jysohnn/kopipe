@@ -22,6 +22,8 @@ abstract class EmbeddingVectorStore : KnowledgeStore {
     }
 
     override fun retrieve(query: String, minSimilarity: Double): String? {
+        if (this.embeddingVectors.isEmpty()) return null
+
         val queryVector = toEmbeddingVector(text = query) ?: return null
         val mostSimilarVector = this.embeddingVectors.maxBy {
             calculateCosineSimilarity(queryVector, it.vector)
