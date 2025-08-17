@@ -93,7 +93,7 @@ println(context.toString()) // Print entire conversation
 
 ### Pipe
 
-The abstract base class for all components:
+The abstract base class for all pipeline components that enables type-safe chaining through the `-` operator:
 
 ```kotlin
 abstract class Pipe<I, O> {
@@ -107,7 +107,7 @@ abstract class Pipe<I, O> {
 
 ### ContextAwareLanguageModel
 
-A wrapper for language models that maintains conversation context:
+A wrapper for language models that maintains conversation context and provides rich prompt templates with system instructions:
 
 ```kotlin
 class ContextAwareLanguageModel(
@@ -121,27 +121,45 @@ class ContextAwareLanguageModel(
 }
 ```
 
-### OpenAIEmbeddingVectorStore
+### EmbeddingVectorStore
 
-A knowledge store that uses OpenAI embeddings for semantic similarity:
+An abstract base class for knowledge stores that use embedding vectors for semantic similarity search:
 
 ```kotlin
-class OpenAIEmbeddingVectorStore(
-    val model: String,
-    private val apiKey: String
-) : KnowledgeStore
+abstract class EmbeddingVectorStore : KnowledgeStore {
+    override fun store(knowledge: List<String>)
+    override fun retrieve(query: String, minSimilarity: Double): String?
+    protected abstract fun toEmbeddingVectors(texts: List<String>): List<List<Double>>?
+}
 ```
 
-### ToolSelector
+### Tool & ToolSelector
 
-An intelligent tool selection system that uses language models to choose appropriate tools:
+A sophisticated tool system with user consent management and intelligent selection:
 
 ```kotlin
+abstract class Tool(
+    val name: String,
+    val description: String,
+    val inputExample: Any,
+    val outputExample: String,
+    val isUserConsentRequired: Boolean
+) {
+    abstract fun invoke(input: String): String
+}
+
 class ToolSelector(
     val languageModel: LanguageModel,
     private val tools: List<Tool>
 ) {
-    fun select(context: Context, input: String): Output
+    data class Output(val tool: Tool?, val input: String = "")
+    
+    fun select(
+        input: String,
+        context: Context,
+        knowledgeContext: Context?,
+        toolContext: Context?
+    ): Output
 }
 ```
 
