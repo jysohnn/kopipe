@@ -105,9 +105,11 @@ A wrapper for language models that maintains conversation context:
 
 ```kotlin
 class ContextAwareLanguageModel(
-    val languageModel: LanguageModel
+  val languageModel: LanguageModel,
+  val context: Context,
+  val knowledgeContext: Context?,
+  val toolContext: Context?
 ) : LanguageModel() {
-    val context: Context = Context()
 
     override fun execute(input: String): String
 }
@@ -120,8 +122,7 @@ A knowledge store that uses OpenAI embeddings for semantic similarity:
 ```kotlin
 class OpenAIEmbeddingVectorStore(
     val model: String,
-    private val apiKey: String,
-    private val isPossibleToRepeatRetrieving: Boolean
+    private val apiKey: String
 ) : KnowledgeStore
 ```
 
