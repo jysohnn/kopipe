@@ -26,6 +26,7 @@ To use OpenAI API, set the environment variable:
 
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
+export GEMINI_API_KEY="your-api-key-here"
 ```
 
 ## Basic Usage
@@ -105,10 +106,10 @@ A wrapper for language models that maintains conversation context:
 
 ```kotlin
 class ContextAwareLanguageModel(
-  val languageModel: LanguageModel,
-  val context: Context,
-  val knowledgeContext: Context?,
-  val toolContext: Context?
+    val languageModel: LanguageModel,
+    val context: Context,
+    val knowledgeContext: Context?,
+    val toolContext: Context?
 ) : LanguageModel() {
 
     override fun execute(input: String): String
