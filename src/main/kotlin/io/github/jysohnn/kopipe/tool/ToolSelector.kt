@@ -26,8 +26,8 @@ class ToolSelector(
     fun select(
         input: String,
         context: Context,
-        toolContext: Context? = null,
-        knowledgeContext: Context? = null
+        knowledgeContext: Context? = null,
+        toolContext: Context? = null
     ): Output {
         val inputWithContext = """
             |# System Instruction
