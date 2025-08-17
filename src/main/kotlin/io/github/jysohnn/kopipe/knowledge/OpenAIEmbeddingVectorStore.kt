@@ -11,7 +11,7 @@ import kotlin.math.sqrt
 class OpenAIEmbeddingVectorStore(
     val model: String = "text-embedding-ada-002",
     private val apiKey: String = System.getenv("OPENAI_API_KEY")
-        ?: throw IllegalArgumentException("API KEY not exist.")
+        ?: throw IllegalArgumentException("OPENAI_API_KEY not exist.")
 ) : KnowledgeStore {
     class EmbeddingVector(
         val vector: List<Double>,

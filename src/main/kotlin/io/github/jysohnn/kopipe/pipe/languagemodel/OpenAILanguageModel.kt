@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 class OpenAILanguageModel(
     val model: String = "gpt-4.1",
     private val apiKey: String = System.getenv("OPENAI_API_KEY")
-        ?: throw IllegalArgumentException("API KEY not exist.")
+        ?: throw IllegalArgumentException("OPENAI_API_KEY not exist.")
 ) : LanguageModel() {
 
     private val httpClient = OkHttpClient.Builder()
