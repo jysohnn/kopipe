@@ -6,7 +6,7 @@ operator overloading of the `Pipe` class.
 ## Key Features
 
 - **Pipeline Connection**: Easily connect multiple components using the `-` operator
-- **Language Model Integration**: Support for various LLMs including OpenAI API
+- **Language Model Integration**: Support for various LLMs including OpenAI, Gemini API
 - **Tool System**: Various tools for file system operations, knowledge stores, and more
 - **Type Safety**: Type-safe pipelines leveraging Kotlin's generics
 
@@ -26,6 +26,11 @@ To use OpenAI API, set the environment variable:
 
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
+```
+
+To use Gemini API, set the environment variable:
+
+```bash
 export GEMINI_API_KEY="your-api-key-here"
 ```
 
@@ -176,7 +181,6 @@ class ToolSelector(
 
 - Kotlin 2.1.20+
 - JVM 21+
-- OpenAI API Key (when using OpenAI language model)
 
 ## License
 
